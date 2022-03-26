@@ -1,0 +1,282 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj8Sk"
+        crossorigin="anonymous">
+    <title>Daily Flight Schedule</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.2/xlsx.full.min.js"></script>
+</head>
+<body>
+    <h1 style="text-align:center">LAs Master Scheduling Program for 2 and 3 Day Availability</h1>
+    <div class="conatiner mt-5">
+        <div class="row"> 
+            <div class="col-md-3"></div>
+            <div class="col-md-3">
+                <input class="form-control" type="file" id="input" accept=".xls,.xlsx"  >
+            </div>
+            <div class="col-md-2">
+                <button class="btn btn-primary" id="button">View Data</button>
+            </div>
+<div class="col-md-12">
+    <pre id="jsondata"></pre>
+</div>
+        </div>
+    </div>
+</body>
+<footer>
+    <p>Instructions: <br>
+    <p>1.) Upload/Attach the excel file that contains the simplified L/A Schedule schedule format <br>
+    <p>2.) Once the excel file is uploaded/attached, click the "View Data" button <br>
+    <p>3.) This program will only accept 2 and 3 day availability <br>
+    
+    </p>
+  </footer>
+
+<script>
+//changes from previous version: effectiveDate = currentDate, rowObject = rowObject
+//https://levelup.gitconnected.com/how-to-convert-excel-file-into-json-object-by-using-javascript-9e95532d48c5
+let selectedFile;
+console.log(window.XLSX);
+document.getElementById('input').addEventListener("change", (event) => {
+    selectedFile = event.target.files[0];
+})
+
+let data=[{
+    "name":"test",
+    "data":"scd",
+    "abc":"sdef"
+}]
+
+const daysOfTheWeek = [
+    'SUNDAY',
+    'MONDAY',
+    'TUESDAY',
+    'WEDNESDAY',
+    'THURSDAY',
+    'FRIDAY',
+    'SATURDAY'
+];
+
+var secondWeekPass = false;
+var counter1 = 0;
+var counter2 = 0;
+var day1, day2, day3, day4, day5, day6, day7, day8, day9, day10, day11, day12, day13, day14;
+
+function ExcelDateToJSDate(date) {
+  return new Date(Math.round((date - 25569)*86400*1000));
+}
+
+document.getElementById('button').addEventListener("click", () => {
+    XLSX.utils.json_to_sheet(data, 'out.xlsx');
+    if(selectedFile){
+        let fileReader = new FileReader();
+        fileReader.readAsBinaryString(selectedFile);
+        fileReader.onload = (event)=>{
+         let data = event.target.result;
+         //https://stackoverflow.com/questions/62770664/date-format-changing-when-converting-xlsx-to-json
+         let workbook = XLSX.read(data, { type: 'binary' , cellDates: true }); //XLSX.read(data,{type:"binary"}); -> Have to use w/ ExcelDateToJSDate https://stackoverflow.com/questions/16229494/converting-excel-date-serial-number-to-date-using-javascript/67130235#67130235
+         console.log(workbook);
+         workbook.SheetNames.forEach(sheet => {
+            let rowObject = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[sheet]);
+
+document.write('Notes:', '<br>');
+document.write(
+    'Copy the desired data below and paste the data in Excel. The data will automatically split into different cells.',
+    '<br>',
+    '<br>'
+);
+document.write(
+    '<table width="100%" border-collapse="collapse">',
+    '<tr>',
+    '<td text-align="100px">',
+    'Name',
+    '</td>',
+    '<td width="100px">',
+    'Sun',
+    '</td>',
+    '<td width="100px">',
+    'Mon',
+    '</td>',
+    '<td width="100px">',
+    'Tue',
+    '</td>',
+    '<td width="100px">',
+    'Wed',
+    '</td>',
+    '<td width="100px">',
+    'Thur',
+    '</td>',
+    '<td width="100px">',
+    'Fri',
+    '</td>',
+    '<td width="100px">',
+    'Sat',
+    '</td>',
+    '<td width="100px">',
+    'Sun',
+    '</td>',
+    '<td width="100px">',
+    'Mon',
+    '</td>',
+    '<td width="100px">',
+    'Tue',
+    '</td>',
+    '<td width="100px">',
+    'Wed',
+    '</td>',
+    '<td width="100px">',
+    'Thur',
+    '</td>',
+    '<td width="100px">',
+    'Fri',
+    '</td>',
+    '<td width="100px">',
+    'Sat',
+    '</td>',
+    '</tr>',
+    '</table>'
+);
+
+var totalPayPeriodWorkDays = [];
+//Create a local array which its index will represent the LA employee and its element will be the amount of days worked
+for (var i = 0; i < rowObject.length; i++) {
+    if (rowObject.Name !== null) totalPayPeriodWorkDays.push(0); //initial work days is 0
+}
+console.log(totalPayPeriodWorkDays.length);
+
+for (var i = 0; i < rowObject.length; i++) {
+    document.write(
+        '<table width="100%" border-collapse="collapse">',
+        '<tr>',
+        '<td width="100px">',
+        rowObject[i].Name,
+        '</td>'
+    );
+        var firstWeek = 3;
+        var secondWeek = 3;
+ 
+if(rowObject[i].SundayOff === 'N'){
+    document.write('<td width="100px">', rowObject[i].SundayStartTime, '</td>');
+}
+else{
+    document.write('<td width="100px">', '', '</td>');
+}
+
+
+if(rowObject[i].MondayOff === 'N'){
+    document.write('<td width="100px">', rowObject[i].MondayStartTime, '</td>');
+}
+else{
+    document.write('<td width="100px">', '', '</td>');
+}
+
+
+if(rowObject[i].TuesdayOff === 'N'){
+    document.write('<td width="100px">', rowObject[i].TuesdayStartTime, '</td>');
+}
+else{
+    document.write('<td width="100px">', '', '</td>');
+}
+
+
+if(rowObject[i].WednesdayOff === 'N'){
+    document.write('<td width="100px">', rowObject[i].WednesdayStartTime, '</td>');
+}
+else{
+    document.write('<td width="100px">', '', '</td>');
+}
+
+
+if(rowObject[i].ThursdayOff === 'N'){
+    document.write('<td width="100px">', rowObject[i].ThursdayStartTime, '</td>');
+}
+else{
+    document.write('<td width="100px">', '', '</td>');
+}
+
+
+if(rowObject[i].FridayOff === 'N'){
+    document.write('<td width="100px">', rowObject[i].FridayStartTime, '</td>');
+}
+else{
+    document.write('<td width="100px">', '', '</td>');
+}
+
+
+if(rowObject[i].SaturdayOff === 'N'){
+    document.write('<td width="100px">', rowObject[i].SaturdayStartTime, '</td>');
+}
+else{
+    document.write('<td width="100px">', '', '</td>');
+}
+
+
+if(rowObject[i].SundayOff === 'N'){
+    document.write('<td width="100px">', rowObject[i].SundayStartTime, '</td>');
+}
+else{
+    document.write('<td width="100px">', '', '</td>');
+}
+
+
+if(rowObject[i].MondayOff === 'N'){
+    document.write('<td width="100px">', rowObject[i].MondayStartTime, '</td>');
+}
+else{
+    document.write('<td width="100px">', '', '</td>');
+}
+
+
+if(rowObject[i].TuesdayOff === 'N'){
+    document.write('<td width="100px">', rowObject[i].TuesdayStartTime, '</td>');
+}
+else{
+    document.write('<td width="100px">', '', '</td>');
+}
+
+
+if(rowObject[i].WednesdayOff === 'N'){
+    document.write('<td width="100px">', rowObject[i].WednesdayStartTime, '</td>');
+}
+else{
+    document.write('<td width="100px">', '', '</td>');
+}
+
+
+if(rowObject[i].ThursdayOff === 'N'){
+    document.write('<td width="100px">', rowObject[i].ThursdayStartTime, '</td>');
+}
+else{
+    document.write('<td width="100px">', '', '</td>');
+}
+
+
+if(rowObject[i].FridayOff === 'N'){
+    document.write('<td width="100px">', rowObject[i].FridayStartTime, '</td>');
+}
+else{
+    document.write('<td width="100px">', '', '</td>');
+}
+
+
+if(rowObject[i].SaturdayOff === 'N'){
+    document.write('<td width="100px">', rowObject[i].SaturdayStartTime, '</td>');
+}
+else{
+    document.write('<td width="100px">', '', '</td>');
+}
+
+
+}
+              document.getElementById("jsondata").innerHTML = JSON.stringify(rowObject,undefined,4)
+         });
+        }
+    }
+});
+</script>
+</html>
